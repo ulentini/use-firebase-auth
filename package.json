@@ -1,6 +1,6 @@
 {
   "name": "use-firebase-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Firebase authentication hook",
   "author": "ulentini",
   "license": "MIT",
@@ -23,7 +23,8 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "react": "^16.8.6"
+    "react": "^16.8.6",
+    "firebase": "^7.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -63,7 +64,5 @@
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-url": "^2.1.0"
   },
-  "dependencies": {
-    "firebase": "^7.2.0"
-  }
+  "dependencies": {}
 }
