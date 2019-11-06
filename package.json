@@ -1,7 +1,7 @@
 {
   "name": "use-firebase-auth",
   "version": "1.0.1",
-  "description": "Firebase authentication hook",
+  "description": "React hook for Firebase Authentication",
   "author": "ulentini",
   "license": "MIT",
   "repository": "ulentini/use-firebase-auth",
@@ -18,38 +18,23 @@
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "yarn run build",
-    "predeploy": "cd demo && yarn install && yarn run build",
-    "netlify": "yarn install && yarn build && cd demo && yarn install && yarn run build",
+    "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build"
   },
+  "dependencies": {
+    "firebase": "^7.2.3"
+  },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "firebase": "^7.2.0"
+    "react": "^16.8.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-external-helpers": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-decorators": "^7.0.0",
-    "@babel/plugin-proposal-do-expressions": "^7.0.0",
-    "@babel/plugin-proposal-export-default-from": "^7.0.0",
-    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
-    "@babel/plugin-proposal-function-bind": "^7.0.0",
-    "@babel/plugin-proposal-function-sent": "^7.0.0",
-    "@babel/plugin-proposal-json-strings": "^7.0.0",
-    "@babel/plugin-proposal-logical-assignment-operators": "^7.0.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
-    "@babel/plugin-proposal-numeric-separator": "^7.0.0",
-    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
-    "@babel/plugin-proposal-pipeline-operator": "^7.0.0",
-    "@babel/plugin-proposal-throw-expressions": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
-    "@babel/plugin-syntax-import-meta": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-eslint": "^10.0.1",
+    "@babel/core": "^7.2.2",
+    "@babel/runtime": "^7.3.1",
+    "@types/jest": "^23.3.13",
+    "@types/react": "^16.7.22",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
     "cross-env": "^5.2.0",
-    "eslint-config-kentcdodds": "^14.2.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
@@ -62,7 +47,8 @@
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-url": "^2.1.0"
-  },
-  "dependencies": {}
+    "rollup-plugin-typescript2": "^0.19.2",
+    "rollup-plugin-url": "^2.1.0",
+    "typescript": "^3.2.4"
+  }
 }
