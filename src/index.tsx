@@ -16,7 +16,7 @@ interface FirebaseContext {
   setLoading: Dispatch<SetStateAction<boolean>>
   error?: FirebaseError | null
   setError: Dispatch<SetStateAction<FirebaseError | null>>
-  firebase: firebaseNs.app.App
+  firebase: typeof firebaseNs
 }
 const FirebaseContext = createContext<FirebaseContext | null>(null)
 
@@ -34,7 +34,7 @@ export function FirebaseAuthProvider({
   firebase,
   children,
 }: {
-  firebase: firebaseNs.app.App
+  firebase: typeof firebaseNs
   children: ReactNode
 }) {
   const [user, setUser] = useState<firebaseNs.User | null>(
