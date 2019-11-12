@@ -1,22 +1,20 @@
 import React, {
   createContext,
   ReactNode,
-  useState,
   Dispatch,
   SetStateAction,
   useEffect,
   useContext,
 } from "react"
 import firebaseNs, { FirebaseError } from "firebase/app"
+import { useReducedState } from "./use-reduced-state"
 
 interface FirebaseContext {
   user: firebaseNs.User | null
-  setUser: Dispatch<SetStateAction<firebaseNs.User | null>>
   loading: boolean
-  setLoading: Dispatch<SetStateAction<boolean>>
   error?: FirebaseError | null
-  setError: Dispatch<SetStateAction<FirebaseError | null>>
   firebase: typeof firebaseNs
+  setState: Dispatch<SetStateAction<FirebaseAuthState>>
 }
 const FirebaseContext = createContext<FirebaseContext | null>(null)
 
@@ -30,6 +28,12 @@ export enum SIGNIN_PROVIDERS {
   YAHOO = "yahoo",
 }
 
+interface FirebaseAuthState {
+  user?: firebaseNs.User | null
+  loading?: boolean
+  error?: FirebaseError | null
+}
+
 export function FirebaseAuthProvider({
   firebase,
   children,
@@ -37,20 +41,22 @@ export function FirebaseAuthProvider({
   firebase: typeof firebaseNs
   children: ReactNode
 }) {
-  const [user, setUser] = useState<firebaseNs.User | null>(
-    firebase.auth().currentUser,
-  )
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<FirebaseError | null>(null)
+  const [{ user, loading, error }, setState] = useReducedState({
+    user: firebase.auth().currentUser,
+    loading: false,
+    error: null,
+  } as FirebaseAuthState)
 
   useEffect(() => {
-    !user && setLoading(true)
+    !user && setState({ loading: true })
     return firebase
       .auth()
       .onAuthStateChanged(function(user: firebaseNs.User | null) {
-        setLoading(false)
-        setError(null)
-        setUser(user)
+        setState({
+          loading: false,
+          error: null,
+          user,
+        })
       })
   }, [])
 
@@ -58,12 +64,10 @@ export function FirebaseAuthProvider({
     <FirebaseContext.Provider
       value={{
         user,
-        setUser,
         loading,
-        setLoading,
         error,
-        setError,
         firebase,
+        setState,
       }}
     >
       {children}
@@ -78,17 +82,10 @@ export function useFirebaseAuth() {
     throw new Error("No FirebaseAuthProvider found.")
   }
 
-  const {
-    user,
-    loading,
-    error,
-    setError,
-    setLoading,
-    firebase,
-  } = firebaseContext
+  const { user, loading, error, setState, firebase } = firebaseContext
 
   async function signInWithProvider(providerType: string) {
-    setLoading(true)
+    setState({ loading: true })
     firebase.auth().useDeviceLanguage()
 
     // const auth: firebaseNs.auth.Auth = (firebase.auth as unknown) as firebaseNs.auth.Auth
@@ -130,8 +127,10 @@ export function useFirebaseAuth() {
         .signInWithPopup(provider as firebaseNs.auth.AuthProvider)
       return user
     } catch (e) {
-      setError(e)
-      setLoading(false)
+      setState({
+        error: e,
+        loading: false,
+      })
       return null
     }
   }
@@ -140,19 +139,21 @@ export function useFirebaseAuth() {
     email: string,
     password: string,
   ): Promise<void | firebaseNs.auth.UserCredential> {
-    setLoading(true)
+    setState({ loading: true })
 
     return firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .catch((e: FirebaseError) => {
-        setError(e)
-        setLoading(false)
+        setState({
+          error: e,
+          loading: false,
+        })
       })
   }
 
   async function signOut(): Promise<void> {
-    setLoading(true)
+    setState({ loading: true })
     return firebase.auth().signOut()
   }
 
@@ -160,13 +161,15 @@ export function useFirebaseAuth() {
     email: string,
     password: string,
   ): Promise<void | firebaseNs.auth.UserCredential> {
-    setLoading(true)
+    setState({ loading: true })
     return firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .catch((e: FirebaseError) => {
-        setError(e)
-        setLoading(false)
+        setState({
+          error: e,
+          loading: false,
+        })
       })
   }
 
