@@ -173,6 +173,20 @@ export function useFirebaseAuth() {
       })
   }
 
+  async function sendPasswordResetEmail(email: string) {
+    setState({ loading: true })
+    return firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(() => setState({ loading: false }))
+      .catch((e: FirebaseError) => {
+        setState({
+          error: e,
+          loading: false,
+        })
+      })
+  }
+
   return {
     user,
     loading,
@@ -181,5 +195,6 @@ export function useFirebaseAuth() {
     signInWithProvider,
     signOut,
     createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
   }
 }
