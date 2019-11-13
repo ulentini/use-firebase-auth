@@ -174,17 +174,39 @@ export function useFirebaseAuth() {
   }
 
   async function sendPasswordResetEmail(email: string) {
-    setState({ loading: true })
-    return firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(() => setState({ loading: false }))
-      .catch((e: FirebaseError) => {
-        setState({
-          error: e,
-          loading: false,
-        })
-      })
+    return firebase.auth().sendPasswordResetEmail(email)
+  }
+
+  async function verifyPasswordResetCode(code: string) {
+    return firebase.auth().verifyPasswordResetCode(code)
+  }
+
+  async function confirmPasswordReset(code: string, newPassword: string) {
+    return firebase.auth().confirmPasswordReset(code, newPassword)
+  }
+
+  async function updateProfile({
+    displayName,
+    photoURL,
+  }: {
+    displayName?: string
+    photoURL?: string
+  }) {
+    if (!user) {
+      throw new Error("User is not logged in")
+    }
+    return user.updateProfile({
+      displayName,
+      photoURL,
+    })
+  }
+
+  async function updatePassword(newPassword: string) {
+    if (!user) {
+      throw new Error("User is not logged in")
+    }
+
+    return user.updatePassword(newPassword)
   }
 
   return {
@@ -196,5 +218,9 @@ export function useFirebaseAuth() {
     signOut,
     createUserWithEmailAndPassword,
     sendPasswordResetEmail,
+    verifyPasswordResetCode,
+    confirmPasswordReset,
+    updateProfile,
+    updatePassword,
   }
 }
