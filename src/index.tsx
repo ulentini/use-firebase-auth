@@ -185,6 +185,10 @@ export function useFirebaseAuth() {
     return firebase.auth().confirmPasswordReset(code, newPassword)
   }
 
+  async function applyActionCode(code: string) {
+    return firebase.auth().applyActionCode(code)
+  }
+
   async function updateProfile({
     displayName,
     photoURL,
