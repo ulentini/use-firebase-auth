@@ -15,6 +15,7 @@ interface FirebaseContext {
   error?: FirebaseError | null
   firebase: typeof firebaseNs
   setState: Dispatch<SetStateAction<FirebaseAuthState>>
+  firstCheck: boolean
 }
 const FirebaseContext = createContext<FirebaseContext | null>(null)
 
@@ -32,6 +33,7 @@ interface FirebaseAuthState {
   user?: firebaseNs.User | null
   loading?: boolean
   error?: FirebaseError | null
+  firstCheck?: boolean
 }
 
 export function FirebaseAuthProvider({
@@ -41,10 +43,11 @@ export function FirebaseAuthProvider({
   firebase: typeof firebaseNs
   children: ReactNode
 }) {
-  const [{ user, loading, error }, setState] = useReducedState({
+  const [{ user, loading, error, firstCheck }, setState] = useReducedState({
     user: firebase.auth().currentUser,
     loading: false,
     error: null,
+    firstCheck: false,
   } as FirebaseAuthState)
 
   useEffect(() => {
@@ -56,6 +59,7 @@ export function FirebaseAuthProvider({
           loading: false,
           error: null,
           user,
+          firstCheck: true,
         })
       })
   }, [])
@@ -68,6 +72,7 @@ export function FirebaseAuthProvider({
         error,
         firebase,
         setState,
+        firstCheck,
       }}
     >
       {children}
@@ -82,7 +87,14 @@ export function useFirebaseAuth() {
     throw new Error("No FirebaseAuthProvider found.")
   }
 
-  const { user, loading, error, setState, firebase } = firebaseContext
+  const {
+    user,
+    loading,
+    error,
+    setState,
+    firebase,
+    firstCheck,
+  } = firebaseContext
 
   async function signInWithProvider(providerType: string) {
     setState({ loading: true })
@@ -217,6 +229,7 @@ export function useFirebaseAuth() {
     user,
     loading,
     error,
+    firstCheck,
     signInWithEmailAndPassword,
     signInWithProvider,
     signOut,
@@ -226,5 +239,6 @@ export function useFirebaseAuth() {
     confirmPasswordReset,
     updateProfile,
     updatePassword,
+    applyActionCode,
   }
 }
