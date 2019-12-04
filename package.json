@@ -22,7 +22,7 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
-    "firebase": "^7.2.3"
+    "firebase": "^7.5.0"
   },
   "peerDependencies": {
     "react": "^16.8.6"
