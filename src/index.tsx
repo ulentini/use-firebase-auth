@@ -139,10 +139,55 @@ export function useFirebaseAuth() {
         .signInWithPopup(provider as firebaseNs.auth.AuthProvider)
       return user
     } catch (e) {
-      setState({
-        error: e,
-        loading: false,
-      })
+      if (
+        e.email &&
+        e.credential &&
+        e.code === "auth/account-exists-with-different-credential"
+      ) {
+        const supportedPopupSignInMethods = [
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+          firebase.auth.GithubAuthProvider.PROVIDER_ID,
+        ]
+
+        const getProvider = (providerId: string) => {
+          switch (providerId) {
+            case firebase.auth.GoogleAuthProvider.PROVIDER_ID:
+              return new firebase.auth.GoogleAuthProvider()
+            case firebase.auth.FacebookAuthProvider.PROVIDER_ID:
+              return new firebase.auth.FacebookAuthProvider()
+            case firebase.auth.GithubAuthProvider.PROVIDER_ID:
+              return new firebase.auth.GithubAuthProvider()
+            default:
+              throw new Error(`No provider implemented for ${providerId}`)
+          }
+        }
+
+        const providers = await firebase
+          .auth()
+          .fetchSignInMethodsForEmail(e.email)
+        const firstPopupProviderMethod = providers.find(p =>
+          supportedPopupSignInMethods.includes(p),
+        )
+
+        // Test: Could this happen with email link then trying social provider?
+        if (!firstPopupProviderMethod) {
+          throw new Error(
+            `Your account is linked to a provider that isn't supported.`,
+          )
+        }
+
+        const linkedProvider = getProvider(firstPopupProviderMethod)
+        linkedProvider.setCustomParameters({ login_hint: e.email })
+
+        const result = await firebase.auth().signInWithPopup(linkedProvider)
+        result.user && result.user.linkWithCredential(e.credential)
+      } else {
+        setState({
+          error: e,
+          loading: false,
+        })
+      }
       return null
     }
   }
