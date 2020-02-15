@@ -134,10 +134,10 @@ export function useFirebaseAuth() {
     }
 
     try {
-      const { user } = await firebase
+      const userCredential = await firebase
         .auth()
         .signInWithPopup(provider as firebaseNs.auth.AuthProvider)
-      return user
+      return userCredential
     } catch (e) {
       if (
         e.email &&
