@@ -96,47 +96,50 @@ export function useFirebaseAuth() {
     firstCheck,
   } = firebaseContext
 
-  async function signInWithProvider(providerType: string) {
+  async function signInWithProvider(
+    provider: string | firebaseNs.auth.AuthProvider,
+  ) {
     setState({ loading: true })
     firebase.auth().useDeviceLanguage()
 
-    // const auth: firebaseNs.auth.Auth = (firebase.auth as unknown) as firebaseNs.auth.Auth
     const auth: typeof firebaseNs.auth = (firebase.auth as unknown) as typeof firebaseNs.auth
 
-    let provider
-    switch (providerType) {
-      case SIGNIN_PROVIDERS.GOOGLE:
-        provider = new auth.GoogleAuthProvider()
-        break
+    let providerObj: firebaseNs.auth.AuthProvider
+    if (typeof provider === "string") {
+      switch (provider) {
+        case SIGNIN_PROVIDERS.GOOGLE:
+          providerObj = new auth.GoogleAuthProvider()
+          break
 
-      case SIGNIN_PROVIDERS.FACEBOOK:
-        provider = new auth.FacebookAuthProvider()
-        break
+        case SIGNIN_PROVIDERS.FACEBOOK:
+          providerObj = new auth.FacebookAuthProvider()
+          break
 
-      case SIGNIN_PROVIDERS.TWITTER:
-        provider = new auth.TwitterAuthProvider()
-        break
+        case SIGNIN_PROVIDERS.TWITTER:
+          providerObj = new auth.TwitterAuthProvider()
+          break
 
-      case SIGNIN_PROVIDERS.GITHUB:
-        provider = new auth.GithubAuthProvider()
-        break
+        case SIGNIN_PROVIDERS.GITHUB:
+          providerObj = new auth.GithubAuthProvider()
+          break
 
-      case SIGNIN_PROVIDERS.MICROSOFT:
-        provider = new auth.OAuthProvider("microsoft.com")
-        break
+        case SIGNIN_PROVIDERS.MICROSOFT:
+          providerObj = new auth.OAuthProvider("microsoft.com")
+          break
 
-      case SIGNIN_PROVIDERS.YAHOO:
-        provider = new auth.OAuthProvider("yahoo.com")
-        break
+        case SIGNIN_PROVIDERS.YAHOO:
+          providerObj = new auth.OAuthProvider("yahoo.com")
+          break
 
-      default:
-        break
+        default:
+          throw new Error(`Unrecognized provider: ${provider}`)
+      }
+    } else {
+      providerObj = provider
     }
 
     try {
-      const userCredential = await firebase
-        .auth()
-        .signInWithPopup(provider as firebaseNs.auth.AuthProvider)
+      const userCredential = await firebase.auth().signInWithPopup(providerObj)
       return userCredential
     } catch (e) {
       if (
