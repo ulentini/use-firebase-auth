@@ -98,6 +98,7 @@ export function useFirebaseAuth() {
 
   async function signInWithProvider(
     provider: string | firebaseNs.auth.AuthProvider,
+    scopes: string[] = [],
   ) {
     setState({ loading: true })
     firebase.auth().useDeviceLanguage()
@@ -136,6 +137,10 @@ export function useFirebaseAuth() {
       }
     } else {
       providerObj = provider
+    }
+
+    if (provider instanceof firebaseNs.auth.OAuthProvider) {
+      scopes.forEach(scope => (providerObj as firebaseNs.auth.OAuthProvider).addScope(scope));
     }
 
     try {
