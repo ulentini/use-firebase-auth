@@ -54,7 +54,7 @@ const Example = () => {
 
 ## Demo
 
-[Live demo](http://use-firebase-auth.netlify.com/)
+[Live demo](http://use-firebase-auth-demo.umbertolentini.com/)
 
 ## License
 
