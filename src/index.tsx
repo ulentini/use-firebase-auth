@@ -10,9 +10,9 @@ import firebaseNs, { FirebaseError } from "firebase/app"
 import { useReducedState } from "./use-reduced-state"
 
 interface FirebaseContext {
-  user: firebaseNs.User | null
+  user?: firebaseNs.User
   loading: boolean
-  error?: FirebaseError | null
+  error?: FirebaseError
   firebase: typeof firebaseNs
   setState: Dispatch<SetStateAction<FirebaseAuthState>>
   firstCheck: boolean
@@ -30,9 +30,9 @@ export enum SIGNIN_PROVIDERS {
 }
 
 interface FirebaseAuthState {
-  user?: firebaseNs.User | null
+  user?: firebaseNs.User
   loading?: boolean
-  error?: FirebaseError | null
+  error?: FirebaseError
   firstCheck?: boolean
 }
 
@@ -42,11 +42,11 @@ export function FirebaseAuthProvider({
 }: {
   firebase: typeof firebaseNs
   children: ReactNode
-}) {
+}): JSX.Element {
+  const firebaseCurrentUser = firebase.auth().currentUser
   const [{ user, loading, error, firstCheck }, setState] = useReducedState({
-    user: firebase.auth().currentUser,
+    user: firebaseCurrentUser === null ? undefined : firebaseCurrentUser,
     loading: false,
-    error: null,
     firstCheck: false,
   } as FirebaseAuthState)
 
@@ -57,8 +57,7 @@ export function FirebaseAuthProvider({
       .onAuthStateChanged(function(user: firebaseNs.User | null) {
         setState({
           loading: false,
-          error: null,
-          user,
+          user: user === null ? undefined : user,
           firstCheck: true,
         })
       })
@@ -99,7 +98,7 @@ export function useFirebaseAuth() {
   async function signInWithProvider(
     provider: string | firebaseNs.auth.AuthProvider,
     options?: { scopes?: string[] },
-  ) {
+  ): Promise<firebaseNs.auth.UserCredential | null> {
     setState({ loading: true })
     firebase.auth().useDeviceLanguage()
 
@@ -139,10 +138,13 @@ export function useFirebaseAuth() {
       providerObj = provider
     }
 
-    const scopes: string[] = (options && Array.isArray(options.scopes)) ? options.scopes : [];
+    const scopes: string[] =
+      options && Array.isArray(options.scopes) ? options.scopes : []
 
     if (provider instanceof firebase.auth.OAuthProvider) {
-      scopes.forEach(scope => (providerObj as firebaseNs.auth.OAuthProvider).addScope(scope));
+      scopes.forEach(scope =>
+        (providerObj as firebaseNs.auth.OAuthProvider).addScope(scope),
+      )
     }
 
     try {
@@ -240,19 +242,22 @@ export function useFirebaseAuth() {
       })
   }
 
-  async function sendPasswordResetEmail(email: string) {
+  async function sendPasswordResetEmail(email: string): Promise<void> {
     return firebase.auth().sendPasswordResetEmail(email)
   }
 
-  async function verifyPasswordResetCode(code: string) {
+  async function verifyPasswordResetCode(code: string): Promise<string> {
     return firebase.auth().verifyPasswordResetCode(code)
   }
 
-  async function confirmPasswordReset(code: string, newPassword: string) {
+  async function confirmPasswordReset(
+    code: string,
+    newPassword: string,
+  ): Promise<void> {
     return firebase.auth().confirmPasswordReset(code, newPassword)
   }
 
-  async function applyActionCode(code: string) {
+  async function applyActionCode(code: string): Promise<void> {
     return firebase.auth().applyActionCode(code)
   }
 
@@ -262,7 +267,7 @@ export function useFirebaseAuth() {
   }: {
     displayName?: string
     photoURL?: string
-  }) {
+  }): Promise<void> {
     if (!user) {
       throw new Error("User is not logged in")
     }
@@ -272,7 +277,7 @@ export function useFirebaseAuth() {
     })
   }
 
-  async function updatePassword(newPassword: string) {
+  async function updatePassword(newPassword: string): Promise<void> {
     if (!user) {
       throw new Error("User is not logged in")
     }
