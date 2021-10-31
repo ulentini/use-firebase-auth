@@ -22,8 +22,8 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "firebase": "^7.5.0"
+    "firebase": "^7.5.0",
+    "react": "^16.8.6"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
