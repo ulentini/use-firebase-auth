@@ -24,14 +24,14 @@ import React from "react"
 import ReactDOM from "react-dom"
 import App from "./components/app"
 import { FirebaseAuthProvider } from "use-firebase-auth"
-import firebase from "firebase/app"
+import { initializeApp } from "firebase/app"
 import "firebase/auth"
 
 const firebaseConfig = {
   //Load your Firebase Project configuration here
 }
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig)
+let firebase = initializeApp(firebaseConfig)
 
 ReactDOM.render(
   <FirebaseAuthProvider firebase={firebase}>
